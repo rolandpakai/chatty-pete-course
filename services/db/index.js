@@ -1,6 +1,19 @@
-import getAll from './getAll';
-import findOne from './findOne';
-import insertOne from './insertOne';
-import findOneAndUpdate from './findOneAndUpdate';
+import * as jsondb from './jsondb';
+import * as mongodb from './mongodb';
 
-export { getAll, findOne, insertOne, findOneAndUpdate };
+const DB_TYPE = process.env.DB_TYPE || 'json';
+
+const dbModules = {
+  'json': jsondb,
+  'mongodb': mongodb,
+};
+
+const { getAll, findOne, insertOne, findOneAndUpdate } = dbModules[DB_TYPE];
+
+
+export { 
+  getAll, 
+  findOne, 
+  insertOne, 
+  findOneAndUpdate 
+};
