@@ -1,8 +1,8 @@
-import { readJson, writeJson } from "lib/jsondb";
+import { clientPromise, getCollection } from "lib/mongodb";
 
 export default async function handler(obj) {
-  const json = await readJson();
-  json.push(obj);
+  const client = await clientPromise;
+  const collection = await getCollection(client);
 
-  await writeJson(json);
+  await collection.insertOne(obj);
 }

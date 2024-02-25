@@ -1,8 +1,10 @@
-import { readJson } from "lib/jsondb";
+import { clientPromise, getCollection } from "lib/mongodb";
 
 export default async function handler(obj) {
-  const json = await readJson();
-  const item = json.find(item => item._id === obj._id);
+  const client = await clientPromise;
+  const collection = await getCollection(client);
+
+  const item = await collection.findOne(obj);
 
   return item;
 }
