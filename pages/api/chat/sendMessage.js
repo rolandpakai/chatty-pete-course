@@ -29,7 +29,7 @@ export default async function handler(req) {
       const json = await response.json();
       chatMessages = json.chat.messages || [];
     } else {
-      const response = await createNewChat(req, message);
+      const response = await createNewChat(req, { message });
       const json = await response.json();
       chatId = json.chat._id;
       newChatId = json.chat._id;

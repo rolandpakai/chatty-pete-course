@@ -1,5 +1,8 @@
-import { writeJson } from "lib/jsondb";
+import { readJson, writeJson } from "lib/jsondb";
 
 export default async function handler(obj) {
-  await writeJson(obj);
+  const json = await readJson();
+  json.push(obj);
+
+  await writeJson(json);
 }

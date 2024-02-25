@@ -1,8 +1,10 @@
 import {v4 as uuid} from 'uuid';
+import { getSession } from "@auth0/nextjs-auth0";
 import { insertOne } from 'services/db';
 
 export default async function handler(req, res) {
   try {
+    const { user } = await getSession(req, res);
     const { message } = req.body; 
 
     if (typeof message !== "string" || message.length > 200) {
@@ -19,6 +21,7 @@ export default async function handler(req, res) {
 
     const chat = {
       _id: uuid(),
+      userId: user.sub,
       messages: [newUserMessage],
       title: message,
     };
