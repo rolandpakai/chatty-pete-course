@@ -18,10 +18,13 @@ export default async function handler(req, res) {
       return;
     }
 
-    const messages = {_id: chatId, messages: {
-      role,
-      content,
-    }}
+    const messages = {
+      _id: chatId, 
+      messages: {
+        role,
+        content,
+      }
+    };
 
     const chat = await findOneAndUpdate(messages);
 
