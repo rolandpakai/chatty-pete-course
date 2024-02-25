@@ -1,9 +1,8 @@
-import { getSession } from "@auth0/nextjs-auth0";
-import clientPromise from "lib/mongodb";
+import {v4 as uuid} from 'uuid';
+import { insertOne } from 'services/db';
 
 export default async function handler(req, res) {
   try {
-    const { user } = await getSession(req, res);
     const { message } = req.body; 
 
     if (typeof message !== "string" || message.length > 200) {
@@ -17,21 +16,18 @@ export default async function handler(req, res) {
       role: "user",
       content: message,
     };
-    
-    const client = await clientPromise;
-    const db = client.db("ChattyPete");
-    const chat = await db.collection("chats").insertOne({
-      userId: user.sub,
+
+    const chat = {
+      _id: uuid(),
       messages: [newUserMessage],
       title: message,
-    });
+    };
+
+    await insertOne(chat);
 
     res.status(200).json({
-      chat: {
-        _id: chat.insertedId.toString(),
-        messages: [newUserMessage],
-        title: message,
-    }});
+      chat
+    });
   } catch (err) {
     res.status(500).json({
       message: "An error occurred when creating a new chat."
