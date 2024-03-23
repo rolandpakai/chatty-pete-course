@@ -2,16 +2,14 @@ import { faMessage, faPlus, faRightFromBracket } from "@fortawesome/free-solid-s
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { getChatList } from "services/api";
 
 export const ChatSideBar = ({ chatId }) => {
   const [chatList, setChatList] = useState([]);
 
   useEffect(() => {
     const loadChatList = async () => {
-      const response = await fetch('/api/chat/getChatList', {
-        method: 'GET',
-      });
-
+      const response = await getChatList();
       const json = await response.json();
 
       setChatList(json?.chats || []);

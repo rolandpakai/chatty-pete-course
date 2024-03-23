@@ -1,15 +1,67 @@
-import { useUser } from "@auth0/nextjs-auth0/client";
+import { useUser } from "lib/auth/client";
+import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRobot } from "@fortawesome/free-solid-svg-icons";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Markdown from 'react-markdown'
 import Image from "next/image";
+import Cookies from 'universal-cookie';
 
-export const Message = ({ role, content }) => {
-  const { user } = useUser();
+const useUserCookie = (COOKIE_NAME) => {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const isLoading = false;
+    const cookies = new Cookies(null, { path: '/' });
+    const user = cookies.get(COOKIE_NAME);
+
+    setUser(user);
+    setIsLoading(isLoading);
+  }, []); 
+
+  return {
+    user,
+    isLoading,
+  }
+}
+
+const authModules = {
+  'auth0': useUser,
+  'cookie': useUserCookie,
+};
+
+export const Message = ({ env, role, content }) => {  
+  const { user } = authModules[env.AUTH_TYPE](env.COOKIE_NAME);
+  /*
+  const auth0User = useUser();
+  const cookieUser = useUserCookie();
+  let user;
+
+  switch (env.AUTH_TYPE) {
+    case 'auth0': user = auth0User.user; break;
+    case 'cookie': user = cookieUser.user; break;
+  }
+  */
+
+  const [ displayName, setDisplayName ] = useState();
+
+  useEffect(() => {
+    let displayName = '?';
+
+    if (role === 'user' && !!user) {
+      displayName = user.name;
+    }
+
+    if (role === 'assistant') {
+      displayName = env.AI_NAME;
+    }
+
+    setDisplayName(displayName);
+  }, [env.AI_NAME, role, user]);
 
   return (
     <div className={`grid grid-cols-[30px_1fr] gap-5 p-5 ${role === 'assistant' ? 'bg-gray-600' : role === 'notice' ? 'bg-red-600' : ''}`}>
-      <div>
+      <div className="flex items-center justify-center">
         {role === 'user' && !!user && (
           <Image 
             src={user.picture} 
@@ -25,10 +77,13 @@ export const Message = ({ role, content }) => {
           </div>
         )}
       </div>
-      <div className="prose prose-invert">
-        <ReactMarkdown>
-          {content}
-        </ReactMarkdown>
+      <div className="">
+        <div className="font-bold">{displayName}</div>
+        <div className="prose prose-invert">
+          <Markdown>
+            {content}
+          </Markdown>
+        </div>
       </div>
     </div>
   )

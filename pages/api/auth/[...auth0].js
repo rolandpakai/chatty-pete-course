@@ -1,5 +1,7 @@
-import { handleAuth, handleLogin } from "@auth0/nextjs-auth0";
+import { handleAuth, handleLogin } from "lib/auth/auth";
 
-export default handleAuth({
-  signup: handleLogin({ authorizationParams: { screen_hint: "signup" }}),
-});
+export default function handler(req, res) {
+  return handleAuth({
+    signup: handleLogin({ authorizationParams: { screen_hint: "signup" }}),
+  })(req, res);
+}

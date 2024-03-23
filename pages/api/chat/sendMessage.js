@@ -1,7 +1,15 @@
-import { OpenAIEdgeStream } from "openai-edge-stream"; 
+import { addMessageToChat, createNewChat, streamChat } from "services/api";
+
+const AI_NAME = process.env.AI_NAME ?? 'LAISA';
 
 export const config = {
   runtime: "edge"
+};
+
+const initialChatMessage = {
+  role: "system",
+  content:
+  `Your name is ${AI_NAME} - Ligthware AI Support Assistant. Your are an AI chat assistant at Lightware Visual Engineering company. An incredibly intelligent and quick-thinking AI, that always replies with an enthusiastic and positive energy. You were created by WebDevEducation. Your response must be formatted as markdown.`,
 };
 
 export default async function handler(req) {
@@ -19,40 +27,17 @@ export default async function handler(req) {
       });
     }
 
-    const initialChatMessage = {
-      role: "system",
-      content:
-      "Your name is Chatty Pete. An incredibly intelligent and quick-thinking AI, that always replies with an enthusiastic and positive energy. You were created by WebDevEducation. Your response must be formatted as markdown.",
-    };
-
     if (chatId) {
-      const response = await fetch(`${req.headers.get('origin')}/api/chat/addMessageToChat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          cookie: req.headers.get('cookie'),
-        },
-        body: JSON.stringify({
-          chatId,
-          role: 'user',
-          content: message,
-        })
-      });
-
+      const body = {
+        chatId,
+        role: 'user',
+        content: message,
+      };
+      const response = await addMessageToChat(req, body);
       const json = await response.json();
       chatMessages = json.chat.messages || [];
     } else {
-      const response = await fetch(`${req.headers.get('origin')}/api/chat/createNewChat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          cookie: req.headers.get('cookie'),
-        }, 
-        body: JSON.stringify({
-          message,
-        })
-      });
-
+      const response = await createNewChat(req, { message });
       const json = await response.json();
       chatId = json.chat._id;
       newChatId = json.chat._id;
@@ -76,38 +61,9 @@ export default async function handler(req) {
 
     messagesToInclude.reverse();
 
-    const stream = await OpenAIEdgeStream('https://api.openai.com/v1/chat/completions', {
-      headers: {
-        'content-type': 'application/json',
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      method: "POST",
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [initialChatMessage, ...messagesToInclude],
-        stream: true,
-      })
-    }, {
-      onBeforeStream: ({emit}) => {
-        if (newChatId) {
-          emit(newChatId, 'newChatId');
-        }
-      },
-      onAfterStream: async ({emit, fullContent}) => {
-        await fetch(`${req.headers.get("origin")}/api/chat/addMessageToChat`, {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            cookie: req.headers.get('cookie'),
-          },
-          body: JSON.stringify({
-            chatId,
-            role: 'assistant',
-            content: fullContent,
-          })
-        });
-      }
-    });
+    const messages = [initialChatMessage, ...messagesToInclude];
+
+    const stream = await streamChat(req, chatId, messages);
 
     return new Response(stream);
   } catch (err) {
