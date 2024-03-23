@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Outfit } from "next/font/google";
 import "../styles/globals.css";
-import { UserProvider } from "@auth0/nextjs-auth0/client";
+import { UserProvider } from "lib/auth/client";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false;

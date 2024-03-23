@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from "next/head";
@@ -10,7 +12,7 @@ import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import { findOne } from 'services/db';
 import { sendMessage } from 'services/api';
 
-export default function ChatPage({ chatId, title, messages = [] }) {
+export default function ChatPage({ env, chatId, title, messages = [] }) {
   const [newChatId, setNewChatId] = useState(null);
   const [incomingMessage, setIncomingMessage] = useState('');
   const [messageText, setMessageText] = useState('');
@@ -118,18 +120,21 @@ export default function ChatPage({ chatId, title, messages = [] }) {
                 {allMessages.map(message => (
                   <Message 
                     key={message._id} 
+                    env={env}
                     role={message.role}
                     content={message.content}
                   />
                 ))}
                 {!!incomingMessage && !routeHasChanged && (
                   <Message 
+                    env={env}
                     role={"assistant"}
                     content={incomingMessage}
                   />
                 )}
                 {!!incomingMessage && !!routeHasChanged && (
                   <Message 
+                    env={env}
                     role={"notice"}
                     content={"Only one message at a time. Please allow any other response to complete before sending another message"}
                   />
@@ -158,6 +163,12 @@ export default function ChatPage({ chatId, title, messages = [] }) {
 export const getServerSideProps = async (ctx) => {
   const _id = ctx.params?.chatId?.[0] || null;
 
+  const env = {
+    AI_NAME: process.env.AI_NAME,
+    AUTH_TYPE: process.env.AUTH_TYPE,
+    COOKIE_NAME: process.env.COOKIE_NAME,
+  };
+
   if (_id) {
     const chat = await findOne({
       _id
@@ -173,6 +184,7 @@ export const getServerSideProps = async (ctx) => {
 
     return {
       props: {
+        env,
         chatId: chat._id,
         title: chat.title,
         messages: chat.messages.map(message => ({
@@ -184,6 +196,8 @@ export const getServerSideProps = async (ctx) => {
   }
 
   return {
-    props: {}
+    props: {
+      env,
+    }
   }
 }

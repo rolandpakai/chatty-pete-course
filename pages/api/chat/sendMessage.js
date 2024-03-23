@@ -1,7 +1,15 @@
 import { addMessageToChat, createNewChat, streamChat } from "services/api";
 
+const AI_NAME = process.env.AI_NAME ?? 'LAISA';
+
 export const config = {
   runtime: "edge"
+};
+
+const initialChatMessage = {
+  role: "system",
+  content:
+  `Your name is ${AI_NAME} - Ligthware AI Support Assistant. Your are an AI chat assistant at Lightware Visual Engineering company. An incredibly intelligent and quick-thinking AI, that always replies with an enthusiastic and positive energy. You were created by WebDevEducation. Your response must be formatted as markdown.`,
 };
 
 export default async function handler(req) {
@@ -53,7 +61,9 @@ export default async function handler(req) {
 
     messagesToInclude.reverse();
 
-    const stream = await streamChat(req, chatId, messagesToInclude);
+    const messages = [initialChatMessage, ...messagesToInclude];
+
+    const stream = await streamChat(req, chatId, messages);
 
     return new Response(stream);
   } catch (err) {

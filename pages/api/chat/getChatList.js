@@ -1,4 +1,4 @@
-import { getSession } from "@auth0/nextjs-auth0";
+import { getSession } from "lib/auth/auth";
 import { getAll } from 'services/db';
 
 export default async function handle(req, res) {

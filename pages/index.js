@@ -1,66 +1,58 @@
+"use client";
+
 import Head from "next/head";
-import Link from "next/link";
-import { useUser } from '@auth0/nextjs-auth0/client';
-import { getSession } from "@auth0/nextjs-auth0";
+import { getSession } from 'lib/auth/auth';
+import { useUser } from 'lib/auth/client';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRobot } from "@fortawesome/free-solid-svg-icons";
+import { useState, useEffect } from 'react'
+import { AuthType } from "components/AuthType"; 
 
-export default function Home() {
-  const {isLoading, error, user} = useUser();
+const AI_NAME = process.env.AI_NAME ?? 'LAISA';
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+export default function Home({ auth_type }) {
+  const [isClient, setIsClient] = useState(false);
+  const { isLoading } = useUser();
 
-  if (error) {
-    return <div>error.message</div>
-  }
+  useEffect(() => {
+    setIsClient(true)
+  }, []);
 
-  return (
-    <>
-      <Head>
-        <title>Chatty Pete - Login or Signup</title>
-      </Head>
-      <div className="flex justify-center items-center min-h-screen w-full bg-gray-800 text-white text-center">
-        <div>
-          <div className="">
-            <FontAwesomeIcon 
-              icon={faRobot} 
-              className="text-emerald-200 text-6xl mb-2"
-            />
-          </div>
-          <h1 className="text-4xl font-bold">
-            Welcome to Chatty Pete
-          </h1>
-          <p className="text-lg mt-2">
-            Log in with your account to continue
-          </p>
-          <div className="flex justify-center gap-3 mt-4">
-            {!user && (
-              <>
-                <Link 
-                  href="/api/auth/login" 
-                  className="btn"
-                >
-                    Login
-                </Link>
-                <Link
-                href="/api/auth/signup"
-                className="btn"
-                >
-                  Signup
-                </Link>
-              </>
-            )}
+  if (isClient) {
+    if (isLoading) {
+      return (
+        <div>Loading...</div>
+      )
+    }
+
+    return (
+      <>
+        <Head>
+          <title>{AI_NAME} - Ligthware AI Support Assistant</title>
+        </Head>
+        <div className="flex justify-center items-center min-h-screen w-full bg-gray-800 text-white text-center">
+          <div>
+            <div className="">
+              <FontAwesomeIcon 
+                icon={faRobot} 
+                className="text-emerald-200 text-6xl mb-2"
+              />
+            </div>
+            <h1 className="text-4xl font-bold">
+              Welcome to {AI_NAME} - Ligthware AI Support Assistant
+            </h1>
+            <AuthType authType={auth_type} />
           </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 }
 
 export const getServerSideProps = async (ctx) => {
   const session = await getSession(ctx.req, ctx.res);
+  const auth_type = process.env.AUTH_TYPE ?? 'auth0';
+
   if (!!session) {
     return {
       redirect: {
@@ -70,6 +62,8 @@ export const getServerSideProps = async (ctx) => {
   }
 
   return {
-    props: {}
+    props: {
+      auth_type
+    }
   }
 }

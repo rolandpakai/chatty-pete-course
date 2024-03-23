@@ -1,12 +1,6 @@
 import { OpenAIEdgeStream } from "openai-edge-stream";
 import { addMessageToChat } from "services/api";
 
-const initialChatMessage = {
-  role: "system",
-  content:
-  "Your name is Chatty Pete. An incredibly intelligent and quick-thinking AI, that always replies with an enthusiastic and positive energy. You were created by WebDevEducation. Your response must be formatted as markdown.",
-};
-
 export default async function handler(req, chatId, messages) {
 
   const stream = await OpenAIEdgeStream('https://api.openai.com/v1/chat/completions', {
@@ -17,7 +11,7 @@ export default async function handler(req, chatId, messages) {
     method: "POST",
     body: JSON.stringify({
       model: "gpt-3.5-turbo",
-      messages: [initialChatMessage, ...messages],
+      messages,
       stream: true,
     })
   }, {

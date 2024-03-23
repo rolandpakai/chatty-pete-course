@@ -1,5 +1,5 @@
 import {v4 as uuid} from 'uuid';
-import { getSession } from "@auth0/nextjs-auth0";
+import { getSession } from "lib/auth/auth";
 import { insertOne } from 'services/db';
 
 export default async function handler(req, res) {
@@ -32,6 +32,7 @@ export default async function handler(req, res) {
       chat
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({
       message: "An error occurred when creating a new chat."
     });
