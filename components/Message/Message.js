@@ -32,17 +32,6 @@ const authModules = {
 
 export const Message = ({ env, role, content }) => {  
   const { user } = authModules[env.AUTH_TYPE](env.COOKIE_NAME);
-  /*
-  const auth0User = useUser();
-  const cookieUser = useUserCookie();
-  let user;
-
-  switch (env.AUTH_TYPE) {
-    case 'auth0': user = auth0User.user; break;
-    case 'cookie': user = cookieUser.user; break;
-  }
-  */
-
   const [ displayName, setDisplayName ] = useState();
 
   useEffect(() => {
