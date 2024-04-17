@@ -5,7 +5,7 @@ export default async function handle(req, res) {
   try {
     try {
       const { user } = await getSession(req, res);
-      const chats = await getAll({
+      const chats = await getAll(process.env.COLLECTION_NAME_CHATS, {
         userId: user.sub,
       });
       res.status(200).json({ chats });

@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       title: message,
     };
 
-    await insertOne(chat);
+    await insertOne(process.env.COLLECTION_NAME_CHATS, chat);
 
     res.status(200).json({
       chat

@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       }
     };
 
-    const chat = await findOneAndUpdate(messages);
+    const chat = await findOneAndUpdate(process.env.COLLECTION_NAME_CHATS, messages);
 
     res.status(200).json({
       chat
