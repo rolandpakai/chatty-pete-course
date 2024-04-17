@@ -1,4 +1,4 @@
-import { faMessage, faPlus, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faMessage, faPlus, faRightFromBracket, faGear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -41,6 +41,10 @@ export const ChatSideBar = ({ chatId }) => {
           </Link>
         ))}
       </div>
+      <Link href="/prompt" className="side-menu-item">
+        <FontAwesomeIcon icon={faGear} />
+        Settings
+      </Link>
       <Link href="/api/auth/logout" className="side-menu-item">
         <FontAwesomeIcon icon={faRightFromBracket} />
         Logout
