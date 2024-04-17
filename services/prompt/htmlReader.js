@@ -1,5 +1,5 @@
 export default async function handler(body) {
-  const response = await fetch(`/api/web/htmlReader`, {
+  const response = await fetch(`/api/prompt/htmlReader`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
