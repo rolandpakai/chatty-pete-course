@@ -1,15 +1,8 @@
 import { addMessageToChat, createNewChat, streamChat } from "services/api";
-
-const AI_NAME = process.env.AI_NAME ?? 'LAISA';
+import { getInitialPrompt } from "services/prompt";
 
 export const config = {
   runtime: "edge"
-};
-
-const initialChatMessage = {
-  role: "system",
-  content:
-  `Your name is ${AI_NAME} - Ligthware AI Support Assistant. Your are an AI chat assistant at Lightware Visual Engineering company. An incredibly intelligent and quick-thinking AI, that always replies with an enthusiastic and positive energy. You were created by WebDevEducation. Your response must be formatted as markdown.`,
 };
 
 export default async function handler(req) {
@@ -33,15 +26,15 @@ export default async function handler(req) {
         role: 'user',
         content: message,
       };
-      const response = await addMessageToChat(req, body);
-      const json = await response.json();
-      chatMessages = json.chat.messages || [];
+      const messageToChat = await addMessageToChat(req, body);
+      const messageToChatJson = await messageToChat.json();
+      chatMessages = messageToChatJson.chat.messages || [];
     } else {
-      const response = await createNewChat(req, { message });
-      const json = await response.json();
-      chatId = json.chat._id;
-      newChatId = json.chat._id;
-      chatMessages = json.chat.messages || [];
+      const newChat = await createNewChat(req, { message });
+      const newChatJson = await newChat.json();
+      chatId = newChatJson.chat._id;
+      newChatId = newChatJson.chat._id;
+      chatMessages = newChatJson.chat.messages || [];
     }
 
     const messagesToInclude = [];
@@ -59,10 +52,11 @@ export default async function handler(req) {
       }
     }
 
+    const initialPrompt = await getInitialPrompt(req, {});
+    const initialPromptJson = await initialPrompt.json();
     messagesToInclude.reverse();
 
-    const messages = [initialChatMessage, ...messagesToInclude];
-
+    const messages = [initialPromptJson, ...messagesToInclude];
     const stream = await streamChat(req, chatId, messages);
 
     return new Response(stream);

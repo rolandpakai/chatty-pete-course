@@ -1,8 +1,8 @@
 import { clientPromise, getCollection } from "lib/mongodb";
 
-export default async function handler(filter) {
+export default async function handler(collectionName, filter) {
   const client = await clientPromise;
-  const collection = await getCollection(client);
+  const collection = await getCollection(collectionName, client);
   
   const list = await collection.find(filter, {
     projection: {

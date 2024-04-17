@@ -49,6 +49,13 @@ export default function ChatPage({ env, chatId, title, messages = [] }) {
     }
   }, [newChatId, generatingResponse, router]);
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); 
+      handleSubmit(e);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -142,14 +149,16 @@ export default function ChatPage({ env, chatId, title, messages = [] }) {
               </div>
             )}
           </div>
-          <footer className="bg-gray-800 p-10">
+          <footer className="bg-gray-800 p-6">
             <form onSubmit={handleSubmit}>
               <fieldset className="flex gap-2" disabled={generatingResponse}>
                 <textarea 
                   value={messageText}
                   onChange={e => setMessageText(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   placeholder={generatingResponse ? "" : "Send a message..."}
-                  className="w-full resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500" />
+                  className="w-full resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500" 
+                />
                 <button type="submit" className="btn">Send</button>
               </fieldset>
             </form>
@@ -170,7 +179,7 @@ export const getServerSideProps = async (ctx) => {
   };
 
   if (_id) {
-    const chat = await findOne({
+    const chat = await findOne(process.env.COLLECTION_NAME_CHATS, {
       _id
     });
     

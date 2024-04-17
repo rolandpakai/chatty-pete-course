@@ -10,7 +10,7 @@ import { AuthType } from "components/AuthType";
 
 const AI_NAME = process.env.AI_NAME ?? 'LAISA';
 
-export default function Home({ auth_type }) {
+export default function Home({ env, auth_type }) {
   const [isClient, setIsClient] = useState(false);
   const { isLoading } = useUser();
 
@@ -28,7 +28,7 @@ export default function Home({ auth_type }) {
     return (
       <>
         <Head>
-          <title>{AI_NAME} - Ligthware AI Support Assistant</title>
+          <title>{env.AI_NAME} - Ligthware AI Support Assistant</title>
         </Head>
         <div className="flex justify-center items-center min-h-screen w-full bg-gray-800 text-white text-center">
           <div>
@@ -53,6 +53,12 @@ export const getServerSideProps = async (ctx) => {
   const session = await getSession(ctx.req, ctx.res);
   const auth_type = process.env.AUTH_TYPE ?? 'auth0';
 
+  const env = {
+    AI_NAME: process.env.AI_NAME,
+    AUTH_TYPE: process.env.AUTH_TYPE,
+    COOKIE_NAME: process.env.COOKIE_NAME,
+  };
+
   if (!!session) {
     return {
       redirect: {
@@ -63,6 +69,7 @@ export const getServerSideProps = async (ctx) => {
 
   return {
     props: {
+      env,
       auth_type
     }
   }
