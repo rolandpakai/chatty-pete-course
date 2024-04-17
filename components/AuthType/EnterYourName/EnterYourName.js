@@ -14,7 +14,7 @@ export const EnterYourName = () => {
             type="text" 
             name="name" 
             placeholder="Enter your name"
-            className=""
+            className="resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500"
             onChange={(e) => setName(e.target.value)}
           />
           <Link 
