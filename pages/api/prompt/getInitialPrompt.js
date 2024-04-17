@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     const initialChatMessage = {
       role: "system",
       content:
-      `Your name is ${AI_NAME} - Ligthware AI Support Assistant. 
+      `Your name is ${AI_NAME} - Lightware AI Support Assistant. 
       Your are an AI chat assistant at Lightware Visual Engineering company. 
       An incredibly intelligent and quick-thinking AI, that always replies with an enthusiastic and positive energy. 
       ${content}
