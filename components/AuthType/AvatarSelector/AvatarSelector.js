@@ -18,8 +18,14 @@ export const AvatarSelector = ({ setSelectedAvatar }) => {
   }, []);
 
   const handleOnClick = (avatar) => {
-    setSelectedAvatarLocal(avatar.name);
-    setSelectedAvatar(avatar.name);
+    let avatarName = avatar.name;
+    
+    if (avatarName === selectedAvatar) {
+      avatarName = '';
+    }
+
+    setSelectedAvatarLocal(avatarName);
+    setSelectedAvatar(avatarName);
   };
 
   return (
@@ -35,7 +41,7 @@ export const AvatarSelector = ({ setSelectedAvatar }) => {
                   width={40}
                   height={40}
                   objectFit="contain"
-                  className={`icon cursor-pointer hover:scale-150 transition-transform duration-300 ${
+                  className={`icon cursor-pointer hover:scale-150 transition-transform duration-200 ${
                     selectedAvatar === avatar.name ? 'scale-150 border-2 border-custom-green' : ''
                   }`}
                   onClick={(e) => handleOnClick(avatar)}
