@@ -1,8 +1,13 @@
-import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from 'next/router';
 
-export const EnterYourName = () => {
+export const EnterYourName = ({ selectedAvatar }) => {
   const [name, setName] = useState('');
+  const router = useRouter();
+ 
+  const handleClick = () => {
+    router.push(`/api/auth/signup?name=${name}&avatar=${selectedAvatar}`);
+  };
 
   return (
     <>
@@ -17,12 +22,13 @@ export const EnterYourName = () => {
             className="resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500"
             onChange={(e) => setName(e.target.value)}
           />
-          <Link 
-            href={`/api/auth/signup?name=${name}`}
-            className="btn"
+          <button 
+            className="btn" 
+            onClick={handleClick}
+            disabled={!name || !selectedAvatar}
           >
             Start
-          </Link>
+          </button>
       </div>
     </>
   )

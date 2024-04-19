@@ -15,6 +15,9 @@ const useUserCookie = (COOKIE_NAME) => {
     const cookies = new Cookies(null, { path: '/' });
     const user = cookies.get(COOKIE_NAME);
 
+    const theme = user.picture.split('-')[0];
+    user.picture = `/images/avatars/${theme}/${user.picture}`;
+
     setUser(user);
     setIsLoading(isLoading);
   }, []); 
