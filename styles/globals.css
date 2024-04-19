@@ -10,4 +10,8 @@
   .side-menu-item {
     @apply m-2 p-2 flex items-center gap-5 rounded-md hover:bg-gray-800;
   }
+
+  .border-custom-green {
+    border-color: rgb(13, 148, 103);
+  }
 }
