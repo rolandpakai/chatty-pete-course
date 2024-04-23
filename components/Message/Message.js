@@ -60,11 +60,11 @@ export const Message = ({ env, role, content }) => {
             width={30}
             height={30}
             alt="User avatar" 
-            className="rounded-sm shadow-md shadow-black/50"
+            className="rounded-full shadow-md shadow-black/50"
           />
         )}
         {role === 'assistant' && (
-          <div className="flex items-center justify-center h-[30px] w-[30px] rounded-sm shadow-md shadow-black/50 bg-gray-800">
+          <div className="flex items-center justify-center h-[30px] w-[30px] rounded-full shadow-md shadow-black/50 bg-gray-800">
             <FontAwesomeIcon icon={faRobot} className="text-emerald-200"/>
           </div>
         )}

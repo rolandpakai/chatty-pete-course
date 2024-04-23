@@ -42,7 +42,7 @@ export const AvatarSelector = ({ setSelectedAvatar }) => {
                 height={40}
                 objectFit="contain"
                 className={`icon cursor-pointer hover:scale-150 transition-transform duration-200 ${
-                  selectedAvatar === avatar.name ? 'scale-150 border-2 border-custom-green' : ''
+                  selectedAvatar === avatar.name ? 'scale-150 border-2 border-custom-green rounded-full' : ''
                 }`}
                 onClick={(e) => handleOnClick(avatar)}
               />
