@@ -43,7 +43,7 @@ export const ChatSideBar = ({ chatId }) => {
       </div>
       <Link href="/prompt" className="side-menu-item">
         <FontAwesomeIcon icon={faGear} />
-        Settings
+        Prompt
       </Link>
       <Link href="/api/auth/logout" className="side-menu-item">
         <FontAwesomeIcon icon={faRightFromBracket} />
