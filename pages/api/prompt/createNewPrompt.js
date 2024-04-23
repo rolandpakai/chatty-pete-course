@@ -5,11 +5,12 @@ import { insertOne, findOneAndUpdate } from 'services/db';
 export default async function handler(req, res) {
   try {
     const { user } = await getSession(req, res);
-    const { url, content, type, page } = req.body;
+    const { url, label, content, type, page } = req.body;
 
     const prompt = {
       _id: uuid(),
       url,
+      label,
       content,
       type,
       page,

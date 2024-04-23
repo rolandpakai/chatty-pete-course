@@ -18,7 +18,6 @@ const processWiki = (document) => {
       element.id !== 'References' &&
       text !== 'References[edit]' &&
       text !== '') {
-      //console.log(`${elementType} ${element.id} ${element.className} = ${text}`);
       contents.push(text.trim());
     }
   });
@@ -36,7 +35,6 @@ const processProducts = (document) => {
     const elementType = element.tagName.toLowerCase();
     if (
       text !== '') {
-      //console.log(`${elementType} ${element.id} ${element.className} = ${text.trim()}`);
       contents.push(text.trim());
     }
   });
@@ -47,7 +45,7 @@ const processProducts = (document) => {
 export default async function handler(req, res) {
   try {
     const { user } = await getSession(req, res);
-    const { url } = req.body;
+    const { url, label } = req.body;
     let { hostname, pathname } = new URL(url);
     let page = '';
     let type = 'html';
@@ -74,7 +72,7 @@ export default async function handler(req, res) {
       default: throw new Error('No processor for the content');
     }
     
-    const promptResponse = await createNewPrompt(req, { url, content: contents.join('\n'), type, page });
+    const promptResponse = await createNewPrompt(req, { url, label, content: contents.join('\n'), type, page });
     const { prompt } = await promptResponse.json();
 
     res.status(200).json({

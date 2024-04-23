@@ -33,10 +33,10 @@ export const PromptSideBar = ({ promptId }) => {
           >
             <FontAwesomeIcon icon={faMessage} className="text-white/50" />
             <span 
-              title={prompt.url}
+              title={prompt.label}
               className="overflow-hidden text-ellipsis whitespace-nowrap"
             >
-              {prompt.url}
+              {prompt.label}
             </span>
           </Link>
         ))}
