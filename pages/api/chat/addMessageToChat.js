@@ -4,9 +4,9 @@ export default async function handler(req, res) {
   try {
     const { chatId, role, content } = req.body;
 
-    if (typeof content !== "string" || content.length > 200) {
+    if (typeof content !== "string" ) {
       res.status(422).json({
-        message: "Content is required and must be less than 200 characters."
+        message: "Content is required."
       });
       return;
     }
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
         content,
       }
     };
-
+    
     const chat = await findOneAndUpdate(process.env.COLLECTION_NAME_CHATS, messages);
 
     res.status(200).json({
