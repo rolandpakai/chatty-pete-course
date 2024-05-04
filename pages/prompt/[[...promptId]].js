@@ -43,8 +43,8 @@ export default function PromptPage({ env, promptId, url, content, label, type, p
           {promptId &&
             <form>
               <fieldset className="flex flex-wrap gap-2 w-full">
-                <div class="flex flex-wrap w-full">
-                  <label for="url" class="w-full block mb-2 text-sm font-medium text-gray-900 dark:text-white">Label</label>
+                <div className="flex flex-wrap w-full">
+                  <label for="url" className="w-full block mb-2 text-sm font-medium text-gray-900 dark:text-white">Label</label>
                   <input
                       id="url"
                       type="text"
@@ -53,8 +53,8 @@ export default function PromptPage({ env, promptId, url, content, label, type, p
                       className="w-full resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500 disabled:text-gray-600"
                     />
                 </div>
-                <div class="flex flex-wrap w-full">
-                  <label for="url" class="w-full block mb-2 text-sm font-medium text-gray-900 dark:text-white">Url</label>
+                <div className="flex flex-wrap w-full">
+                  <label for="url" className="w-full block mb-2 text-sm font-medium text-gray-900 dark:text-white">Url</label>
                   <input
                       id="url"
                       type="text"
@@ -63,8 +63,8 @@ export default function PromptPage({ env, promptId, url, content, label, type, p
                       className="w-full resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500 disabled:text-gray-600"
                     />
                 </div>
-                <div class="flex flex-wrap w-full">
-                  <label for="content" class="w-full block mb-2 text-sm font-medium text-gray-900 dark:text-white">Content</label>
+                <div className="flex flex-wrap w-full">
+                  <label for="content" className="w-full block mb-2 text-sm font-medium text-gray-900 dark:text-white">Content</label>
                   <textarea
                   ref={textareaRef}
                     id="content"

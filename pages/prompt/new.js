@@ -39,7 +39,7 @@ export default function NewPromptPage({ env }) {
           <main className="bg-gray-800 p-10 w-full">
             <form onSubmit={handleSubmit}>
               <fieldset className="flex flex-wrap gap-3 w-full">
-                <div class="flex flex-wrap w-full">
+                <div className="flex flex-wrap w-full">
                   <input
                     type="text"
                     value={label}
@@ -48,7 +48,7 @@ export default function NewPromptPage({ env }) {
                     className="w-full resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500"
                   />
                 </div>
-                <div class="flex flex-wrap w-full">
+                <div className="flex flex-wrap w-full">
                   <input
                     type="text"
                     value={url}
@@ -57,7 +57,7 @@ export default function NewPromptPage({ env }) {
                     className="w-full resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500"
                   />
                 </div>
-                <div class="flex flex-wrap gap-5 pt-2">
+                <div className="flex flex-wrap gap-5 pt-2">
                   <button 
                     type="submit" 
                     className="btn"
