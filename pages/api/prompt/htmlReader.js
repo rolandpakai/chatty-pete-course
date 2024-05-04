@@ -1,11 +1,12 @@
 import { getSession } from "lib/auth/auth";
 import { createNewPrompt } from 'services/prompt';
 import { JSDOM } from 'jsdom';
+import puppeteer from 'puppeteer';
 
-const processWiki = (document) => {
+const processWikiPage = (document) => {
+  const contents = [];
   const bodyContent = document.getElementById("bodyContent");
   const elements = bodyContent.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li');
-  const contents = [];
 
   elements.forEach((element) => {
     const text = element.textContent.trim();
@@ -25,19 +26,44 @@ const processWiki = (document) => {
   return contents;
 }
 
-const processProducts = (document) => {
+const processProductPage = (document) => {
+  const contents = [];
   const bodyContent = document.getElementById("maincontent");
   const elements = bodyContent.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li');
-  const contents = [];
 
   elements.forEach((element) => {
     const text = element.textContent.trim();
-    const elementType = element.tagName.toLowerCase();
-    if (
-      text !== '') {
+
+    if (text !== '') {
       contents.push(text.trim());
     }
   });
+
+  return contents;
+}
+
+const processProductPageImages = async (url) => {
+  const contents = [];
+  const browser = await puppeteer.launch();
+  const browserPage = await browser.newPage();
+  await browserPage.goto(url, { waitUntil: 'networkidle0' });
+
+  const imageUrls = await browserPage.evaluate(() => {
+    const imgs = document.querySelectorAll('img');
+    const urls = [];
+    imgs.forEach(img => {
+        if (img.src.toLowerCase().includes('media/catalog/product/cache/image')) {
+            urls.push(img.src);
+        }
+    });
+    return urls;
+  });
+
+  await browser.close();
+
+  if (imageUrls.length > 0) {
+    contents.push(`Image(s) about the product: ${imageUrls.join(', ')}`);
+  }
 
   return contents;
 }
@@ -61,16 +87,23 @@ export default async function handler(req, res) {
     }
 
     const response = await fetch(url);
-    const html = await response.text();
+    const html = await response.text(); 
     const dom = new JSDOM(html);
     const document = dom.window.document;
-    let contents = [];
+    const contents = [];
 
     switch (page) {
-      case 'wiki': contents = processWiki(document); break;
-      case 'products': contents = processProducts(document); break;
+      case 'wiki': 
+        contents.push(processWikiPage(document)); 
+        break;
+      case 'products': 
+        contents.push(processProductPage(document));
+        contents.push(await processProductPageImages(url));
+        break;
       default: throw new Error('No processor for the content');
     }
+
+    contents.push(`More information at the following link: ${url}`);
     
     const promptResponse = await createNewPrompt(req, { url, label, content: contents.join('\n'), type, page });
     const { prompt } = await promptResponse.json();
