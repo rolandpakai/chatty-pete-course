@@ -48,21 +48,28 @@ const processProductPageImages = async (url) => {
   const browserPage = await browser.newPage();
   await browserPage.goto(url, { waitUntil: 'networkidle0' });
 
-  const imageUrls = await browserPage.evaluate(() => {
+  const images = await browserPage.evaluate(() => {
     const imgs = document.querySelectorAll('img');
-    const urls = [];
+    const imgsList = [];
+
     imgs.forEach(img => {
         if (img.src.toLowerCase().includes('media/catalog/product/cache/image')) {
-            urls.push(img.src);
+          const imgData = { src: img.src, alt: img.getAttribute('alt') };
+          imgsList.push(imgData);
         }
     });
-    return urls;
+
+    return imgsList;
   });
 
   await browser.close();
 
-  if (imageUrls.length > 0) {
-    contents.push(`Image(s) about the product: ${imageUrls.join(', ')}`);
+  if (images.length > 0) {
+    const imagesContent = images.map((img) => {
+      return `src='${img.src}' alt='${img.alt}'`
+    })
+
+    contents.push(`${images.length} image about the product: ${imagesContent.join(', ')}`);
   }
 
   return contents;
