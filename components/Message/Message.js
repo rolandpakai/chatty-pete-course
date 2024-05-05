@@ -1,9 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/jsx-no-comment-textnodes */
 import { useUser } from "lib/auth/client";
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRobot } from "@fortawesome/free-solid-svg-icons";
+import Slider from "react-slick";
 import Markdown from 'react-markdown'
-import Image from "next/image";
 import Cookies from 'universal-cookie';
 
 const useUserCookie = (COOKIE_NAME) => {
@@ -33,9 +36,73 @@ const authModules = {
   'cookie': useUserCookie,
 };
 
+const extractImagesFromMarkdown = (content) => {
+  
+  const jsonRegex = /```json(.*?)```/gs;
+  const images = [];
+  let match;
+ 
+  while ((match = jsonRegex.exec(content)) !== null) {
+      const jsonString = match[1].trim();
+
+      try {
+          let jsonData = JSON.parse(jsonString);
+
+          if (!Array.isArray(jsonData) && jsonData.images) {
+            jsonData = jsonData.images;
+          }
+
+          if (Array.isArray(jsonData)) {
+              jsonData.forEach(image => {
+                  if (image.src && image.alt) {
+                      images.push(image);
+                  }
+              });
+          }
+      } catch (error) {
+          console.error('Error parsing JSON:', error);
+      }
+  }
+  
+  const contentWithoutImages = content.replace(jsonRegex, '');
+
+  return { contentWithoutImages, images };
+}
+
 export const Message = ({ env, role, content }) => {  
   const { user } = authModules[env.AUTH_TYPE](env.COOKIE_NAME);
   const [ displayName, setDisplayName ] = useState();
+  const [ markdownContent, setMarkdownContent] = useState(content);
+  const [ images, setImages] = useState([]);
+
+  const settings = {
+    customPaging: function(index) {
+      const img = images[index];
+      console.log('customPaging', img);
+      return (
+        <a>
+          <img 
+            src={img.thumbnail} 
+            alt={img.alt} 
+          />
+        </a>
+      );
+    },
+    dots: true,
+    dotsClass: "slick-dots slick-thumb",
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    centerMode: false,
+  };
+
+  useEffect(() => {
+    const { contentWithoutImages, images } = extractImagesFromMarkdown(content);
+    console.log('images', images);
+    setImages(images);
+    setMarkdownContent(contentWithoutImages);
+  }, [content]);
 
   useEffect(() => {
     let displayName = '?';
@@ -73,8 +140,25 @@ export const Message = ({ env, role, content }) => {
         <div className="font-bold">{displayName}</div>
         <div className="prose prose-invert">
           <Markdown>
-            {content}
+            { markdownContent }
           </Markdown>
+          {images.length > 0 && 
+            <div className="slider-container">
+              <Slider {...settings}>
+                {images.map((image, index) => (
+                  <div key={index}>
+                    <div className="flex items-center justify-center" >
+                      <img 
+                        src={image.src} 
+                        alt={image.alt} 
+                        style={{width: "75%", height: "75%"}}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </Slider>
+            </div>
+        }
         </div>
       </div>
     </div>
