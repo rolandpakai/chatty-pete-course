@@ -96,6 +96,53 @@ const processProductPageImages = async (url) => {
   return contents;
 }
 
+const processUserManualPage = (document) => {
+  const contents = [];
+  const bodyContent = document.getElementById("UM");
+  const elements = bodyContent.querySelectorAll('.LW-UM2-Heading1, .LW-UM2-Heading2, .LW-UM2-Heading3, .LW-UM2-Subhead-big, .LW-UM2-Subhead-small, .LW-UM2-Bodytext, .LW-UM2-Steps, .LW-UM2-Simple-text');
+
+  elements.forEach((element) => {
+    const text = element.textContent.trim();
+
+    if (text !== '') {
+      contents.push(text.trim());
+    }
+  });
+
+  return contents;
+}
+
+const processUserManualImages = (document, url) => {
+  const contents = [];
+  const imgs = document.querySelectorAll('img');
+  const imgsData = {};
+
+  imgs.forEach(img => {
+    const imgSrc = url.split('/').slice(0, -1).join('/');
+    const imgName = img.src.split('/').pop();
+    const imgData = { src: imgSrc + '/' + img.src, alt: img.getAttribute('alt'), name: imgName };
+    const image = imgsData[imgName];
+
+    if (image) {
+      image.src = imgData.src;
+    } else {
+      imgsData[imgName] = imgData;
+        }
+  
+  });
+  const imgsList = Object.values(imgsData);
+  
+  if (imgsList.length > 0) {
+    const productImages = {
+      imgsList
+    };
+
+    contents.push(JSON.stringify(productImages));
+  }
+
+  return contents;
+}
+
 export default async function handler(req, res) {
   try {
     const { user } = await getSession(req, res);
@@ -109,7 +156,11 @@ export default async function handler(req, res) {
         pathname = pathname.slice(1);
       }
       const pathnameParts = pathname.split('/');
-      page = pathnameParts[0];
+      if(pathnameParts[0] === "media" && pathnameParts[2] === "User_Manuals"){
+        page = pathnameParts[2];
+      } else {
+        page = pathnameParts[0];
+      }
     } else {
       page = hostname;
     }
@@ -128,11 +179,14 @@ export default async function handler(req, res) {
         contents.push(processProductPage(document));
         contents.push(await processProductPageImages(url));
         break;
+      case 'User_Manuals':
+        contents.push(processUserManualPage(document));
+        contents.push(processUserManualImages(document, url))
+        break;
       default: throw new Error('No processor for the content');
     }
 
     contents.push(`More information at the following link: ${url}`);
-    
     const promptResponse = await createNewPrompt(req, { url, label, content: contents.join('\n'), type, page });
     const { prompt } = await promptResponse.json();
 
