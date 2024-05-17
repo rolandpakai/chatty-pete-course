@@ -20,6 +20,7 @@ export default function ChatPage({ env, chatId, title, messages = [] }) {
   const [generatingResponse, setGeneratingResponse] = useState(false);
   const [fullMessage, setFullMessage] = useState('');
   const [originalChatId, setOriginalChatId] = useState(chatId);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   const router = useRouter();
   const routeHasChanged = chatId !== originalChatId;
 
@@ -98,6 +99,40 @@ export default function ChatPage({ env, chatId, title, messages = [] }) {
     setGeneratingResponse(false);
   };
 
+  const handleUploadButtonClick = () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.onchange = handleFileUpload;
+    fileInput.click();
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      /*
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await res.json();
+      */
+ 
+      const fileData = {
+        _id: uuid(),
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        lastModified: file.lastModified,
+      };
+
+      setUploadedFiles(prevArray => [...prevArray, JSON.stringify(fileData)]);
+    }
+  };
+
   const allMessages = [...messages, ...newChatMessages];
 
   return (
@@ -148,10 +183,39 @@ export default function ChatPage({ env, chatId, title, messages = [] }) {
                 )}
               </div>
             )}
+            {!!uploadedFiles.length && (
+              <div className="mb-auto">
+                {uploadedFiles.map(file => (
+                  <Message 
+                    key={file._id} 
+                    env={env}
+                    role={"file"}
+                    content={file}
+                  />
+                ))}
+              </div>
+            )}
           </div>
           <footer className="bg-gray-800 p-6">
-            <form onSubmit={handleSubmit}>
-              <fieldset className="flex gap-2" disabled={generatingResponse}>
+            <div className="w-full">
+              <div className="flex gap-2">
+                <div class="flex">
+                  <button 
+                    className="flex items-center justify-center text-token-text-primary juice:h-8 juice:w-8 dark:text-white juice:rounded-full focus-visible:outline-black dark:focus-visible:outline-white juice:mb-1 juice:ml-[3px]" 
+                    aria-label="Attach files"
+                    onClick={handleUploadButtonClick}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                      <path 
+                        fill="currentColor" 
+                        fill-rule="evenodd" 
+                        d="M9 7a5 5 0 0 1 10 0v8a7 7 0 1 1-14 0V9a1 1 0 0 1 2 0v6a5 5 0 0 0 10 0V7a3 3 0 1 0-6 0v8a1 1 0 1 0 2 0V9a1 1 0 1 1 2 0v6a3 3 0 1 1-6 0z" 
+                        clip-rule="evenodd" 
+                        data-darkreader-inline-fill="">
+                      </path>
+                    </svg>
+                  </button>
+                </div>
                 <textarea 
                   value={messageText}
                   onChange={e => setMessageText(e.target.value)}
@@ -159,9 +223,15 @@ export default function ChatPage({ env, chatId, title, messages = [] }) {
                   placeholder={generatingResponse ? "" : "Send a message..."}
                   className="w-full resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-500 focus:bg-gray-600 focus:outline focus:outline-emerald-500" 
                 />
-                <button type="submit" className="btn">Send</button>
-              </fieldset>
-            </form>
+                <button 
+                  type="submit" 
+                  className="btn"
+                  onClick={handleSubmit}
+                >
+                    Send
+                </button>
+              </div>
+            </div>
           </footer>
         </div>
       </div>
