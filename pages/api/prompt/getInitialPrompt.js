@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       Your are an AI chat assistant at Lightware Visual Engineering company. 
       An incredibly intelligent and quick-thinking AI, that always replies with an enthusiastic and positive energy. 
       ${content}
-      Your response must be formatted as markdown and You must render the image urls.`,
+      Your response must be formatted as markdown except in case of the response contains a 'images' json You just add json in a valid json format to the end of your response.`,
     };
 
     res.status(200).json(initialChatMessage);

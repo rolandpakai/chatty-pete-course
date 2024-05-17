@@ -50,14 +50,35 @@ const processProductPageImages = async (url) => {
 
   const images = await browserPage.evaluate(() => {
     const imgs = document.querySelectorAll('img');
-    const imgsList = [];
+    const imgsData = {};
 
     imgs.forEach(img => {
         if (img.src.toLowerCase().includes('media/catalog/product/cache/image')) {
-          const imgData = { src: img.src, alt: img.getAttribute('alt') };
-          imgsList.push(imgData);
+          const imgName = img.src.split('/').pop();
+          const imgData = { src: img.src, alt: img.getAttribute('alt'), name: imgName };
+          const image = imgsData[imgName];
+
+          if (image) {
+            image.src = imgData.src;
+          } else {
+            imgsData[imgName] = imgData;
+          }
+        }
+
+        if (img.src.toLowerCase().includes('media/catalog/product/cache/thumbnail')) {
+          const imgName = img.src.split('/').pop();
+          const imgData = { thumbnail: img.src, alt: img.getAttribute('alt'), name: imgName };
+          const image = imgsData[imgName];
+
+          if (image) {
+            image.thumbnail = imgData.thumbnail;
+          } else {
+            imgsData[imgName] = imgData;
+          }
         }
     });
+
+    const imgsList = Object.values(imgsData);
 
     return imgsList;
   });
@@ -65,11 +86,11 @@ const processProductPageImages = async (url) => {
   await browser.close();
 
   if (images.length > 0) {
-    const imagesContent = images.map((img) => {
-      return `src='${img.src}' alt='${img.alt}'`
-    })
+    const productImages = {
+      images
+    };
 
-    contents.push(`${images.length} image about the product: ${imagesContent.join(', ')}`);
+    contents.push(JSON.stringify(productImages));
   }
 
   return contents;

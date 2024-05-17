@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
+.slick-track {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.slick-next, .slick-prev {
+  top: 35% !important;
+}
+
 @layer components {
   .btn {
     @apply rounded-md bg-emerald-500 px-4 py-2 text-white hover:bg-emerald-600 disabled:bg-emerald-300;
@@ -13,5 +26,27 @@
 
   .border-custom-green {
     border-color: rgb(13, 148, 103);
+  }
+
+  .slider-container {
+    min-height: 0;
+    min-width: 0;
+    padding: 5px;
+  }
+
+  .slick-track {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .slick-dots {
+    bottom: 55px !important;
+    position: relative !important;
+  }
+
+  .slick-dots li {
+    width: auto !important;
+    height: auto !important;
   }
 }
