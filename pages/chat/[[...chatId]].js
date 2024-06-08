@@ -106,30 +106,20 @@ export default function ChatPage({ env, chatId, title, messages = [] }) {
     fileInput.click();
   };
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
       
-      /*
-      const res = await fetch('/api/upload', {
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
 
-      const result = await res.json();
-      */
- 
-      const fileData = {
-        _id: uuid(),
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        lastModified: file.lastModified,
-      };
+      const result = await response.json();
 
-      setUploadedFiles(prevArray => [...prevArray, JSON.stringify(fileData)]);
+      setUploadedFiles(prevArray => [...prevArray, JSON.stringify(result.data)]);
     }
   };
 
