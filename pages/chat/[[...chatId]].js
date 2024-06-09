@@ -202,11 +202,14 @@ export const getServerSideProps = async (ctx) => {
         }))
       }
     }
-  }
-
-  return {
-    props: {
-      env,
+  } else {
+    const chatId = `new-${uuid()}`;
+    
+    return {
+      props: {
+        env,
+        chatId,
+      }
     }
   }
 }

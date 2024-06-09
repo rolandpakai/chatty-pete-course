@@ -20,7 +20,7 @@ export default async function handler(req) {
       });
     }
 
-    if (chatId) {
+    if (chatId && !chatId.startsWith('new-')) {
       const body = {
         chatId,
         role: 'user',
