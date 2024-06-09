@@ -54,7 +54,7 @@ const extractImagesFromMarkdown = (content) => {
 
           if (Array.isArray(jsonData)) {
               jsonData.forEach(image => {
-                  if (image.src && image.alt) {
+                  if (image.src && image.name) {
                       images.push(image);
                   }
               });
@@ -99,7 +99,6 @@ export const Message = ({ env, role, content }) => {
 
   useEffect(() => {
     const { contentWithoutImages, images } = extractImagesFromMarkdown(content);
-    console.log('images', images);
     setImages(images);
     setMarkdownContent(contentWithoutImages);
   }, [content]);
