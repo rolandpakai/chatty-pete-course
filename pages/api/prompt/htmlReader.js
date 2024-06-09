@@ -98,6 +98,7 @@ const processProductPageImages = async (url) => {
 
 const processUserManualPage = (document) => {
   const contents = [];
+
   const bodyContent = document.getElementById("UM");
   const elements = bodyContent.querySelectorAll('.LW-UM2-Heading1, .LW-UM2-Heading2, .LW-UM2-Heading3, .LW-UM2-Subhead-big, .LW-UM2-Subhead-small, .LW-UM2-Bodytext, .LW-UM2-Steps, .LW-UM2-Simple-text');
 
@@ -127,14 +128,14 @@ const processUserManualImages = (document, url) => {
       image.src = imgData.src;
     } else {
       imgsData[imgName] = imgData;
-        }
-  
+    }
   });
-  const imgsList = Object.values(imgsData);
+
+  const images = Object.values(imgsData);
   
-  if (imgsList.length > 0) {
+  if (images.length > 0) {
     const productImages = {
-      imgsList
+      images
     };
 
     contents.push(JSON.stringify(productImages));
@@ -146,8 +147,9 @@ const processUserManualImages = (document, url) => {
 export default async function handler(req, res) {
   try {
     const { user } = await getSession(req, res);
-    const { url, label } = req.body;
-    let { hostname, pathname } = new URL(url);
+    const label = req.body.label;
+    let url = req.body.url;
+    let { origin, hostname, pathname } = new URL(url);
     let page = '';
     let type = 'html';
 
@@ -155,9 +157,14 @@ export default async function handler(req, res) {
       if (pathname.startsWith('/')) {
         pathname = pathname.slice(1);
       }
+
       const pathnameParts = pathname.split('/');
+
       if(pathnameParts[0] === "media" && pathnameParts[2] === "User_Manuals"){
         page = pathnameParts[2];
+        pathnameParts.pop();
+        pathnameParts.push("UM.html");
+        url = origin.concat("/" + pathnameParts.join("/"));
       } else {
         page = pathnameParts[0];
       }
@@ -167,7 +174,7 @@ export default async function handler(req, res) {
 
     const response = await fetch(url);
     const html = await response.text(); 
-    const dom = new JSDOM(html);
+    const dom = new JSDOM(html, {resources: "usable"});
     const document = dom.window.document;
     const contents = [];
 
