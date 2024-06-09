@@ -78,7 +78,7 @@ export const Message = ({ env, role, content }) => {
   const settings = {
     customPaging: function(index) {
       const img = images[index];
-      console.log('customPaging', img);
+
       return (
         <a>
           <img 
